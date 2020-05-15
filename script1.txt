@@ -1,0 +1,44 @@
+-- Listing all the current databases owned by me. 
+SHOW DATABASES; 
+
+
+-- Deleting the database called melbadryassign2db if it exists
+DROP DATABASE IF EXISTS melbadryassign2db; 
+
+-- Creating a database called melbadryassign2db
+CREATE DATABASE melbadryassign2db;
+
+-- Using the database called melbadryassign2db
+USE melbadryassign2db; 
+
+-- Granting the T.A. access to the database
+GRANT USAGE ON *.* TO 'ta'@'localhost';
+DROP USER 'ta'@'localhost';
+CREATE USER 'ta'@'localhost' IDENTIFIED BY 'cs3319';
+GRANT ALL PRIVILEGES ON melbadryassign2db.* TO 'ta'@'localhost';
+FLUSH PRIVILEGES;
+
+-- Listing all the tables
+SHOW TABLES;
+
+-- Creating the needed tables to solve the given problem in the assignment
+CREATE TABLE patient(patientohipnumber CHAR(9) NOT NULL, firstname VARCHAR(20), 
+lastname VARCHAR(20), PRIMARY KEY(patientohipnumber));
+
+CREATE TABLE doctor(doctorlicensenumber CHAR(4) NOT NULL, licensedsince DATE, 
+speciality VARCHAR(30), firstname VARCHAR(20), lastname VARCHAR(20), hospitalcode CHAR(3),
+PRIMARY KEY(doctorlicensenumber));
+
+CREATE TABLE hospital(hospitalcode CHAR(3) NOT NULL, name VARCHAR(20), numberofbeds INT, 
+city VARCHAR(20), province CHAR(2), doctorlicensenumber CHAR(4), startingdateasheadofhospital DATE,
+PRIMARY KEY(hospitalcode), FOREIGN KEY(doctorlicensenumber) REFERENCES doctor(doctorlicensenumber));
+
+ALTER TABLE doctor ADD FOREIGN KEY (hospitalcode) REFERENCES hospital(hospitalcode);
+
+CREATE TABLE treats(doctorlicensenumber CHAR(4) NOT NULL, patientohipnumber CHAR(9) NOT NULL, 
+PRIMARY KEY(doctorlicensenumber, patientohipnumber), 
+FOREIGN KEY(doctorlicensenumber) REFERENCES doctor(doctorlicensenumber) ON DELETE CASCADE, 
+FOREIGN KEY(patientohipnumber) REFERENCES patient(patientohipnumber));
+
+-- Listing all the tables again
+SHOW TABLES;

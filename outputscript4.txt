@@ -1,0 +1,231 @@
+Warning: Using a password on the command line interface can be insecure.
+--------------
+SELECT * FROM doctor
+--------------
+
++---------------------+---------------+--------------+-----------+------------+--------------+
+| doctorlicensenumber | licensedsince | speciality   | firstname | lastname   | hospitalcode |
++---------------------+---------------+--------------+-----------+------------+--------------+
+| GD56                | 1960-06-24    | Podiatrist   | Joey      | Shabado    | BBC          |
+| HT45                | 1987-06-20    | Surgeon      | Ross      | Clooney    | DDE          |
+| JK78                | 1990-08-08    | Surgeon      | Mandy     | Webster    | BBC          |
+| QS68                | 1980-01-01    | Podiatrist   | Matt      | Albert     | ABC          |
+| RD34                | 1980-09-09    | Urologist    | Bernie    | Kavorikian | BBC          |
+| SE66                | 1989-08-24    | Surgeon      | Colleen   | Aziz       | ABC          |
+| YT67                | 1955-02-20    | Pediatrician | Ben       | Spock      | DDE          |
++---------------------+---------------+--------------+-----------+------------+--------------+
+7 rows in set (0.00 sec)
+
+ERROR 1451 (23000) at line 8: Cannot delete or update a parent row: a foreign key constraint fails (`melbadryassign2db`.`hospital`, CONSTRAINT `hospital_ibfk_1` FOREIGN KEY (`doctorlicensenumber`) REFERENCES `doctor` (`doctorlicensenumber`))
+--------------
+DELETE FROM doctor WHERE licensedsince < '1965-01-01'
+--------------
+
+--------------
+SELECT * FROM doctor
+--------------
+
++---------------------+---------------+--------------+-----------+------------+--------------+
+| doctorlicensenumber | licensedsince | speciality   | firstname | lastname   | hospitalcode |
++---------------------+---------------+--------------+-----------+------------+--------------+
+| GD56                | 1960-06-24    | Podiatrist   | Joey      | Shabado    | BBC          |
+| HT45                | 1987-06-20    | Surgeon      | Ross      | Clooney    | DDE          |
+| JK78                | 1990-08-08    | Surgeon      | Mandy     | Webster    | BBC          |
+| QS68                | 1980-01-01    | Podiatrist   | Matt      | Albert     | ABC          |
+| RD34                | 1980-09-09    | Urologist    | Bernie    | Kavorikian | BBC          |
+| SE66                | 1989-08-24    | Surgeon      | Colleen   | Aziz       | ABC          |
+| YT67                | 1955-02-20    | Pediatrician | Ben       | Spock      | DDE          |
++---------------------+---------------+--------------+-----------+------------+--------------+
+7 rows in set (0.00 sec)
+
+--------------
+SELECT * FROM hospital
+--------------
+
++--------------+-----------+--------------+----------+----------+---------------------+------------------------------+
+| hospitalcode | name      | numberofbeds | city     | province | doctorlicensenumber | startingdateasheadofhospital |
++--------------+-----------+--------------+----------+----------+---------------------+------------------------------+
+| ABC          | Victoria  |         1600 | London   | ON       | SE66                | 1994-12-05                   |
+| BBC          | St.Joseph |         1000 | London   | ON       | GD56                | 1999-09-10                   |
+| DDE          | Victoria  |         1200 | Victoria | BC       | YT67                | 1997-12-07                   |
++--------------+-----------+--------------+----------+----------+---------------------+------------------------------+
+3 rows in set (0.00 sec)
+
+--------------
+SELECT * FROM treats
+--------------
+
++---------------------+-------------------+
+| doctorlicensenumber | patientohipnumber |
++---------------------+-------------------+
+| GD56                | 110112113         |
+| HT45                | 111222111         |
+| HT45                | 111222333         |
+| JK78                | 111222333         |
+| SE66                | 111222333         |
+| GD56                | 333444555         |
+| HT45                | 444555666         |
+| JK78                | 444555666         |
+| GD56                | 667766777         |
+| HT45                | 667766777         |
+| JK78                | 667766777         |
+| HT45                | 999999999         |
++---------------------+-------------------+
+12 rows in set (0.00 sec)
+
+--------------
+CREATE VIEW patientview AS SELECT patient.firstname AS 'Patient First Name', patient.lastname AS 'Patient Last Name', 
+doctor.lastname AS 'Doctor Last Name', hospital.name AS 'Hospital Name' FROM (((patient INNER JOIN treats ON 
+patient.patientohipnumber = treats.patientohipnumber) INNER JOIN doctor ON treats.doctorlicensenumber =
+doctor.doctorlicensenumber) INNER JOIN hospital ON doctor.doctorlicensenumber = hospital.doctorlicensenumber) WHERE 
+hospital.startingdateasheadofhospital > '1995-12-31'
+--------------
+
+Query OK, 0 rows affected (0.00 sec)
+
+--------------
+SELECT * FROM patientview
+--------------
+
++--------------------+-------------------+------------------+---------------+
+| Patient First Name | Patient Last Name | Doctor Last Name | Hospital Name |
++--------------------+-------------------+------------------+---------------+
+| Bill               | Gellar            | Shabado          | St.Joseph     |
+| Colleen            | Gellar            | Shabado          | St.Joseph     |
+| Scotty             | Bing              | Shabado          | St.Joseph     |
++--------------------+-------------------+------------------+---------------+
+3 rows in set (0.01 sec)
+
+--------------
+SELECT * FROM doctor
+--------------
+
++---------------------+---------------+--------------+-----------+------------+--------------+
+| doctorlicensenumber | licensedsince | speciality   | firstname | lastname   | hospitalcode |
++---------------------+---------------+--------------+-----------+------------+--------------+
+| GD56                | 1960-06-24    | Podiatrist   | Joey      | Shabado    | BBC          |
+| HT45                | 1987-06-20    | Surgeon      | Ross      | Clooney    | DDE          |
+| JK78                | 1990-08-08    | Surgeon      | Mandy     | Webster    | BBC          |
+| QS68                | 1980-01-01    | Podiatrist   | Matt      | Albert     | ABC          |
+| RD34                | 1980-09-09    | Urologist    | Bernie    | Kavorikian | BBC          |
+| SE66                | 1989-08-24    | Surgeon      | Colleen   | Aziz       | ABC          |
+| YT67                | 1955-02-20    | Pediatrician | Ben       | Spock      | DDE          |
++---------------------+---------------+--------------+-----------+------------+--------------+
+7 rows in set (0.00 sec)
+
+--------------
+SELECT * FROM treats
+--------------
+
++---------------------+-------------------+
+| doctorlicensenumber | patientohipnumber |
++---------------------+-------------------+
+| GD56                | 110112113         |
+| HT45                | 111222111         |
+| HT45                | 111222333         |
+| JK78                | 111222333         |
+| SE66                | 111222333         |
+| GD56                | 333444555         |
+| HT45                | 444555666         |
+| JK78                | 444555666         |
+| GD56                | 667766777         |
+| HT45                | 667766777         |
+| JK78                | 667766777         |
+| HT45                | 999999999         |
++---------------------+-------------------+
+12 rows in set (0.00 sec)
+
+--------------
+SELECT * FROM doctor
+--------------
+
++---------------------+---------------+--------------+-----------+------------+--------------+
+| doctorlicensenumber | licensedsince | speciality   | firstname | lastname   | hospitalcode |
++---------------------+---------------+--------------+-----------+------------+--------------+
+| GD56                | 1960-06-24    | Podiatrist   | Joey      | Shabado    | BBC          |
+| HT45                | 1987-06-20    | Surgeon      | Ross      | Clooney    | DDE          |
+| JK78                | 1990-08-08    | Surgeon      | Mandy     | Webster    | BBC          |
+| QS68                | 1980-01-01    | Podiatrist   | Matt      | Albert     | ABC          |
+| RD34                | 1980-09-09    | Urologist    | Bernie    | Kavorikian | BBC          |
+| SE66                | 1989-08-24    | Surgeon      | Colleen   | Aziz       | ABC          |
+| YT67                | 1955-02-20    | Pediatrician | Ben       | Spock      | DDE          |
++---------------------+---------------+--------------+-----------+------------+--------------+
+7 rows in set (0.00 sec)
+
+--------------
+DELETE FROM doctor WHERE lastname = 'Clooney'
+--------------
+
+Query OK, 1 row affected (0.00 sec)
+
+--------------
+SELECT * FROM doctor
+--------------
+
++---------------------+---------------+--------------+-----------+------------+--------------+
+| doctorlicensenumber | licensedsince | speciality   | firstname | lastname   | hospitalcode |
++---------------------+---------------+--------------+-----------+------------+--------------+
+| GD56                | 1960-06-24    | Podiatrist   | Joey      | Shabado    | BBC          |
+| JK78                | 1990-08-08    | Surgeon      | Mandy     | Webster    | BBC          |
+| QS68                | 1980-01-01    | Podiatrist   | Matt      | Albert     | ABC          |
+| RD34                | 1980-09-09    | Urologist    | Bernie    | Kavorikian | BBC          |
+| SE66                | 1989-08-24    | Surgeon      | Colleen   | Aziz       | ABC          |
+| YT67                | 1955-02-20    | Pediatrician | Ben       | Spock      | DDE          |
++---------------------+---------------+--------------+-----------+------------+--------------+
+6 rows in set (0.00 sec)
+
+--------------
+SELECT * FROM treats
+--------------
+
++---------------------+-------------------+
+| doctorlicensenumber | patientohipnumber |
++---------------------+-------------------+
+| GD56                | 110112113         |
+| JK78                | 111222333         |
+| SE66                | 111222333         |
+| GD56                | 333444555         |
+| JK78                | 444555666         |
+| GD56                | 667766777         |
+| JK78                | 667766777         |
++---------------------+-------------------+
+7 rows in set (0.00 sec)
+
+--------------
+SELECT * FROM doctor
+--------------
+
++---------------------+---------------+--------------+-----------+------------+--------------+
+| doctorlicensenumber | licensedsince | speciality   | firstname | lastname   | hospitalcode |
++---------------------+---------------+--------------+-----------+------------+--------------+
+| GD56                | 1960-06-24    | Podiatrist   | Joey      | Shabado    | BBC          |
+| JK78                | 1990-08-08    | Surgeon      | Mandy     | Webster    | BBC          |
+| QS68                | 1980-01-01    | Podiatrist   | Matt      | Albert     | ABC          |
+| RD34                | 1980-09-09    | Urologist    | Bernie    | Kavorikian | BBC          |
+| SE66                | 1989-08-24    | Surgeon      | Colleen   | Aziz       | ABC          |
+| YT67                | 1955-02-20    | Pediatrician | Ben       | Spock      | DDE          |
++---------------------+---------------+--------------+-----------+------------+--------------+
+6 rows in set (0.00 sec)
+
+ERROR 1451 (23000) at line 53: Cannot delete or update a parent row: a foreign key constraint fails (`melbadryassign2db`.`hospital`, CONSTRAINT `hospital_ibfk_1` FOREIGN KEY (`doctorlicensenumber`) REFERENCES `doctor` (`doctorlicensenumber`))
+--------------
+DELETE FROM doctor WHERE speciality='Surgeon'
+--------------
+
+--------------
+SELECT * FROM doctor
+--------------
+
++---------------------+---------------+--------------+-----------+------------+--------------+
+| doctorlicensenumber | licensedsince | speciality   | firstname | lastname   | hospitalcode |
++---------------------+---------------+--------------+-----------+------------+--------------+
+| GD56                | 1960-06-24    | Podiatrist   | Joey      | Shabado    | BBC          |
+| JK78                | 1990-08-08    | Surgeon      | Mandy     | Webster    | BBC          |
+| QS68                | 1980-01-01    | Podiatrist   | Matt      | Albert     | ABC          |
+| RD34                | 1980-09-09    | Urologist    | Bernie    | Kavorikian | BBC          |
+| SE66                | 1989-08-24    | Surgeon      | Colleen   | Aziz       | ABC          |
+| YT67                | 1955-02-20    | Pediatrician | Ben       | Spock      | DDE          |
++---------------------+---------------+--------------+-----------+------------+--------------+
+6 rows in set (0.00 sec)
+
+Bye
